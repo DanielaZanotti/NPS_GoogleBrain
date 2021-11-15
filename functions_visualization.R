@@ -7,7 +7,7 @@ attach(data)
 #pressure in
 func_data1=data.frame()
 j=1
-for(i in seq(1,80000,80) ){
+for(i in seq(1,6640,80) ){
   x1=data[i:(i+79),6]
   func_data1[j,1:80]=x1
   j=j+1
@@ -50,31 +50,3 @@ plot(f_data2,main="out")
 plot(f_data3,main="pressure")
 
 
-times=data.frame()
-j=1
-for(i in seq(1,80000,80) ){
-  tim=data[i:(i+79),5]
-  times[j,1:80]=tim
-  j=j+1
-}
-
-
-
-
-times2=as.matrix(times)
-ff=as.matrix(func_data1)
-
-library(fdakma)
-
-
-fdakma_example <- kmap(
-  x=times2, y = ff, n_clust = 5, 
-  warping_method = 'affine', 
-  similarity_method = 'pearson',  # similarity computed as the cosine
-  # between the first derivatives 
-  # (correlation)
-  center_method = 'mean'
-  # seeds = c(3,18) # you can give a little help to the algorithm...
-)
-
-kmap_show_results(fdakma_example)

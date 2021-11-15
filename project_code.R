@@ -33,6 +33,7 @@ grid <-  seq( 1, 80)
 f_data1 <- fData(grid,func_data1)
 
 
+
 #u_out
 func_data2=data.frame()
 for(i in seq(1,length(train_s$id),80) ){
@@ -68,16 +69,17 @@ for(i in seq(1,length(train_s$id),80) ){
   tim=train_s[i:(i+79),5]
   times = rbind(times, t(tim))
 }
-
-
+truncation=20
+times_truncated=times[1:truncation]
+func_data1_truncated<-func_data1[,1:truncation]
 
 ###################### CLUSTERING ###########################
-times2=as.matrix(times)
-ff=as.matrix(func_data1)
-
+times2=as.matrix(times_truncated)
+ff=as.matrix(func_data1_truncated)
+n_cluster=30
 fdakma_example <- kmap(
-  x=times2, y = ff, n_clust = 20, 
-  warping_method = 'affine', 
+  x=times2, y = ff, n_clust = n_cluster, 
+  warping_method = 'shift', 
   similarity_method = 'pearson',  # similarity computed as the cosine
   # between the first derivatives 
   # (correlation)
@@ -87,20 +89,26 @@ fdakma_example <- kmap(
 
 kmap_show_results(fdakma_example)
 
-clus1 = ff[which(fdakma_example$labels == 1), 1:80]
-time1 = times2[which(fdakma_example$labels == 1), 1:80]
-data_W.fd.1 <- Data2fd(y = clus1,argvals = time1,basisobj = basis.1)
 
 x11()
-matplot(t(time1),t(clus1), type='l', xlab='x', ylab='orig.func', col= "grey")
+par(mfrow=c(4,n_cluster/4))
+for (i in seq(1,n_cluster )){
+  clus = ff[which(fdakma_example$labels == i), 1:truncation]
+  time = times2[which(fdakma_example$labels == i), 1:truncation]
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+  
+} 
+  
+  
 
 
-clus3 = ff[which(fdakma_example$labels == 5), 1:80]
-time3 = times2[which(fdakma_example$labels == 5), 1:80]
+
+
+
+clus15 = ff[which(fdakma_example$labels == 15), 1:20]
+time15 = times2[which(fdakma_example$labels == 15), 1:20]
 x11()
-matplot(t(time3),t(clus3), type='l', xlab='x', ylab='orig.func', col= "grey")
-
-
+matplot(t(time14),t(clus14), type='l', xlab='x', ylab='orig.func', col= "grey")
 
 
 

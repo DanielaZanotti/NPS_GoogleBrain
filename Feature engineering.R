@@ -15,6 +15,17 @@ train_s <- df %>%
 
 attach(train_s)
 
+detach(train_s)
+
+
+################
+### R_c
+################
+train_s$R_C <- paste(as.character(train_s$R),as.character(train_s$C), sep ="_")
+X<-split(train_s, train_s$R_C)
+id_X = names(X
+)
+
 ################
 ### CUMULATIVE SUM OF u_in 
 ################
@@ -89,7 +100,7 @@ for (i in unique(train_s$breath_id)) {
 
 train_s$n_change_sign_u_in <- 0
 for (i in unique(train_s$breath_id)) {
-  x <- train_s[which(breath_id==i), 12]
+  x <- train_s[which(breath_id==i), 6]
   signs <- sign(x)
   ss <- sum(signs[-1] != signs[-length(x)])
   train_s[which(breath_id==i), 'n_change_sign_u_in'] <- ss

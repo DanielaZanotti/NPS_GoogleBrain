@@ -2,11 +2,15 @@
 ### CLUSTERING
 ################
 
+
 ts = data.frame()
-for(i in seq(1,length(train_s$id),80) ){
-  x1 = train_s[i+79,]
-  ts = rbind(ts, x1)
+for(i in unique(train_until1$breath_id))
+{
+  x1 = train_until1[which(breath_id==i), ]
+  l = dim(x1)[1]
+  ts = rbind(ts, x1[l,])
 }
+
 
 ### CLUSTER 
 plot(ts$n_change_sign_u_in)
@@ -33,15 +37,15 @@ for(i in seq(1,length(train_s$id),80) ){
 ##################
 #time
 func_data1=data.frame()
-for(i in seq(1,length(train_s$id),80) ){
-  x1=train_s[i:(i+79),5]
+for(i in unique(train_until1$breath_id)  ){
+  x1=train_until1[which(breath_id==i),'time_step']
   func_data1 = rbind(func_data1, t(x1))
 }
 
 #pressure
 func_data4=data.frame()
-for(i in seq(1,length(train_s$id),80) ){
-  x4=train_s[i:(i+79),8]
+for(i in unique(train_until1$breath_id) ){
+  x4=train_until1[which(breath_id==i), 'pressure']
   func_data4 = rbind(func_data4, t(x4))
 }
 
@@ -52,8 +56,8 @@ plot(f_data4,main="pressure")
 
 #u_in
 func_data2=data.frame()
-for(i in seq(1,length(train_s$id),80) ){
-  x2=train_s[i:(i+79),6]
+for(i in unique(train_until1$breath_id) ){
+  x2=train_until1[which(breath_id==i), 'u_in']
   func_data2 = rbind(func_data2, t(x2))
 }
 
@@ -64,8 +68,8 @@ plot(f_data2,main="in")
 
 #clust
 func_data5 = data.frame()
-for(i in seq(1,length(train_s$id),80) ){
-  x5 = train_s[i:(i+79),'clust']
+for(i in unique(train_until1$breath_id)){
+  x5 = train_until1[which(breath_id==i),'clust']
   func_data5 = rbind(func_data5, t(x5))
 }
 

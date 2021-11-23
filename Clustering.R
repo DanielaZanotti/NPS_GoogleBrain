@@ -6,9 +6,9 @@
 ts = data.frame()
 for(i in unique(train_until1$breath_id))
 {
-  x1 = train_until1[which(breath_id==i), ]
-  l = dim(x1)[1]
-  ts = rbind(ts, x1[l,])
+  x1 = train_until1[which(train_until1$breath_id==i), ]
+
+  ts = rbind(ts, x1[15,])
 }
 
 
@@ -27,8 +27,8 @@ cor(coph, cl.e)
 
 
 j = 1
-for(i in seq(1,length(train_s$id),80) ){
-  train_s[i:(i+79),'clust'] = cluster.ew[j]
+for(i in seq(1,length(train_until1$id),30) ){
+  train_until1[i:(i+29),'clust'] = cluster.ew[j]
   j = j +1
 }
 
@@ -38,18 +38,18 @@ for(i in seq(1,length(train_s$id),80) ){
 #time
 func_data1=data.frame()
 for(i in unique(train_until1$breath_id)  ){
-  x1=train_until1[which(breath_id==i),'time_step']
+  x1=train_until1[which(train_until1$breath_id==i),'time_step']
   func_data1 = rbind(func_data1, t(x1))
 }
 
 #pressure
 func_data4=data.frame()
 for(i in unique(train_until1$breath_id) ){
-  x4=train_until1[which(breath_id==i), 'pressure']
+  x4=train_until1[which(train_until1$breath_id==i), 'pressure']
   func_data4 = rbind(func_data4, t(x4))
 }
 
-grid <-  seq( 1, 80)
+grid <-  seq( 1, 30)
 f_data4 <- fData(grid,func_data4)
 
 plot(f_data4,main="pressure")
@@ -57,11 +57,11 @@ plot(f_data4,main="pressure")
 #u_in
 func_data2=data.frame()
 for(i in unique(train_until1$breath_id) ){
-  x2=train_until1[which(breath_id==i), 'u_in']
+  x2=train_until1[which(train_until1$breath_id==i), 'u_in']
   func_data2 = rbind(func_data2, t(x2))
 }
 
-grid <-  seq( 1, 80)
+grid <-  seq( 1, 30)
 f_data2 <- fData(grid,func_data2)
 
 plot(f_data2,main="in")
@@ -69,7 +69,7 @@ plot(f_data2,main="in")
 #clust
 func_data5 = data.frame()
 for(i in unique(train_until1$breath_id)){
-  x5 = train_until1[which(breath_id==i),'clust']
+  x5 = train_until1[which(train_until1$breath_id==i),'clust']
   func_data5 = rbind(func_data5, t(x5))
 }
 
@@ -79,6 +79,7 @@ uin = as.matrix(func_data2)
 clu = as.matrix(func_data5)
 
 x11()
+par(mfrow=c(1,2))
 matplot(t(times),t(pr), type='l', xlab='x', ylab='orig.func', col= clu)
 matplot(t(times),t(uin), type='l', xlab='x', ylab='orig.func', col= clu)
 
@@ -112,13 +113,13 @@ plot(ts[c2, 'tot_u_in'], col = cluster.ew2)
 j = 1
 for(i in c1 ){
   idx = ts[i, 'breath_id']
-  train_s[which(breath_id==idx),'clust'] = cluster.ew[j]
+  train_until1[which(train_until1$breath_id==idx),'clust'] = cluster.ew[j]
   j = j +1
 }
 j = 1
 for(i in c2 ){
   idx = ts[i, 'breath_id']
-  train_s[which(breath_id==idx),'clust'] = cluster.ew2[j]+2
+  train_until1[which(train_until1$breath_id==idx),'clust'] = cluster.ew2[j]+2
   j = j +1
 }
 

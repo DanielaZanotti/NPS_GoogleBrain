@@ -3,11 +3,12 @@ library(tidyverse)
 library(roahd)
 library(fdakmapp)
 set.seed(2304)
+library(mgcv)
 
 df <-  read.table("Data/train.csv",header=TRUE,sep=",")
 
 num <- length(df$breath_id)
-r_num <- sample(unique(df$breath_id), num*0.0005, replace = F)
+r_num <- sample(unique(df$breath_id), num*0.00005, replace = F)
 length(r_num)
 
 train_s <- df %>% 
@@ -268,3 +269,20 @@ matplot(t(times),t(pr), type='l', xlab='x', ylab='orig.func', col= clu)
 matplot(t(times),t(uin), type='l', xlab='x', ylab='orig.func', col= clu)
 
 
+
+
+################################
+attach(train_s)
+         
+rm(ls = fm)
+fm<-gamm(pressure ~ s(u_in) + s(time_step) + R + C + u_out ,random=list(breath_id=~1),data=train_s)
+summary(fm$lme)
+summary(fm$gam)
+
+library(gamm4)
+fm1<-gamm4(pressure ~ s(u_in) + s(time_step) + R + C + u_out ,data=train_s,random = ~ (u_in+time_step|breath_id))
+
+
+help(gamm4)
+summary(fm1$gam) ## summary of gam
+summary(fm1$mer) ## underlying mixed model

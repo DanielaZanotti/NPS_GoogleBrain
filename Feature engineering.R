@@ -2,17 +2,25 @@ library(readr)
 library(tidyverse) 
 library(roahd)
 library(fdakmapp)
-set.seed(2304)
 library(mgcv)
+set.seed(2304)
 
 df <-  read.table("Data/train.csv",header=TRUE,sep=",")
 
-num <- length(df$breath_id)
-r_num <- sample(unique(df$breath_id), num*0.00005, replace = F)
-length(r_num)
+r_num <- c()
+for( r in unique(df$R))
+{
+  for( c in unique(df$C))
+  {
+    d <- df[which(df$R==r & df$C==c),'breath_id']
+    rn <- sample(unique(d), length(d)*0.00005, replace = F)
+    r_num <- c(r_num, rn )
+  }
+}
 
 train_s <- df %>% 
   filter(breath_id %in% r_num)
+
 
 #train_until1 <- train_s %>% 
 #  filter(train_s$u_out == 0)
@@ -44,7 +52,7 @@ id_X = names(X)
  
 train_until1$tot_u_in <- 0
 for (i in unique(train_until1$breath_id)) {
-  train_until1[which(train_until1$breath_id==i), 'tot_u_in'] <- cumsum(train_until1[which(breath_id==i),6])
+  train_until1[which(train_until1$breath_id==i), 'tot_u_in'] <- cumsum(train_until1[which(train_until1$breath_id==i),6])
 }
 
 
@@ -101,7 +109,7 @@ for (i in unique(train_until1$breath_id)) {
 
 train_until1$u_in_diff_max <- 0
 for (i in unique(train_until1$breath_id)) {
-  train_until1[which(train_until1$breath_id==i), 'u_in_diff_max'] <- train_until1[which(train_until1$breath_id==i), 'u_in'] - train_until1[which(breath_id==i), 'max_u_in']
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff_max'] <- train_until1[which(train_until1$breath_id==i), 'u_in'] - train_until1[which(train_until1$breath_id==i), 'max_u_in']
 }
 
 

@@ -21,10 +21,6 @@ for( r in unique(df$R))
 train_s <- df %>% 
   filter(breath_id %in% r_num)
 
-
-#train_until1 <- train_s %>% 
-#  filter(train_s$u_out == 0)
-
 train_until1=data.frame()
 for(i in seq(1,length(train_s$id),80) ){
   t1=train_s[i:(i+29),]
@@ -36,7 +32,37 @@ attach(train_until1)
 
 detach(train_until1)
 
+##########
+### TEST
+##########
 
+test <- df
+
+for( i in r_num)
+{
+  test <- test[which(test$breath_id != i), ]
+}
+
+r_num2 <- c()
+for( r in unique(test$R))
+{
+  for( c in unique(test$C))
+  {
+    d <- test[which(test$R==r & test$C==c),'breath_id']
+    rn2 <- sample(unique(d), length(d)*0.00005, replace = F)
+    r_num2 <- c(r_num2, rn2 )
+  }
+}
+
+test_s <- test %>% 
+  filter(breath_id %in% r_num2)
+
+
+test_until1 = data.frame()
+for(i in seq(1,length(test_s$id),80) ){
+  t1=test_s[i:(i+29),]
+  test_until1 = rbind(test_until1, t1)
+}
 
 
 ################
@@ -44,6 +70,10 @@ detach(train_until1)
 ################
 train_until1$R_C <- paste(as.character(train_until1$R),as.character(train_until1$C), sep ="_")
 X<-split(train_until1, train_until1$R_C)
+id_X = names(X)
+
+test_until1$R_C <- paste(as.character(test_until1$R),as.character(test_until1$C), sep ="_")
+X<-split(test_until1, test_until1$R_C)
 id_X = names(X)
 
 ################
@@ -55,6 +85,10 @@ for (i in unique(train_until1$breath_id)) {
   train_until1[which(train_until1$breath_id==i), 'tot_u_in'] <- cumsum(train_until1[which(train_until1$breath_id==i),6])
 }
 
+test_until1$tot_u_in <- 0
+for (i in unique(test_until1$breath_id)) {
+  test_until1[which(test_until1$breath_id==i), 'tot_u_in'] <- cumsum(test_until1[which(test_until1$breath_id==i),6])
+}
 
 ################
 ### FIRST AND LAST VALUE OF u_in
@@ -76,6 +110,22 @@ for( i in unique(train_until1$breath_id))
 }
 
 
+test_until1$last_u_in <- 0
+for( i in  unique(test_until1$breath_id))
+{
+  x = test_until1[which(test_until1$breath_id==i), ]
+  l = dim(x)[1]
+  test_until1[which(test_until1$breath_id==i), 'last_u_in'] <- x[l,'u_in']
+}
+
+test_until1$first_u_in <- 0
+for( i in unique(test_until1$breath_id))
+{
+  x = test_until1[which(test_until1$breath_id==i), ]
+  test_until1[which(test_until1$breath_id==i), 'first_u_in'] <- x[1,'u_in']
+}
+
+
 ###################
 ### MAX VALUE OF u_in FOR EACH BREATH
 ###################
@@ -84,6 +134,13 @@ train_until1$max_u_in <- 0
 for (i in unique(train_until1$breath_id)) {
   mx <- max(train_until1[which(train_until1$breath_id==i), 'u_in'])
   train_until1[which(train_until1$breath_id==i), 'max_u_in'] <- mx
+}
+
+
+test_until1$max_u_in <- 0
+for (i in unique(test_until1$breath_id)) {
+  mx <- max(test_until1[which(test_until1$breath_id==i), 'u_in'])
+  test_until1[which(test_until1$breath_id==i), 'max_u_in'] <- mx
 }
 
 
@@ -103,6 +160,17 @@ for (i in unique(train_until1$breath_id)) {
 }
 
 
+test_until1$u_in_diff1 <- 0
+test_until1$u_in_diff2 <- 0
+
+for (i in unique(test_until1$breath_id)) {
+  xx <- test_until1[which(test_until1$breath_id==i), 'u_in']
+  l <- length(xx)
+  shift <- c(0, 0, xx)
+  test_until1[which(test_until1$breath_id==i), 'u_in_diff1'] <- shift[3:(l+2)] - shift[2:(l+1)]
+  test_until1[which(test_until1$breath_id==i), 'u_in_diff2'] <- shift[3:(l+2)] - shift[1:l]
+}
+
 ################
 ### DIFFERENCE BETWEEN CURRENT VALUE OF u_in AND THE MAX VALUE WITHIN THE BREATH
 ################
@@ -112,6 +180,10 @@ for (i in unique(train_until1$breath_id)) {
   train_until1[which(train_until1$breath_id==i), 'u_in_diff_max'] <- train_until1[which(train_until1$breath_id==i), 'u_in'] - train_until1[which(train_until1$breath_id==i), 'max_u_in']
 }
 
+test_until1$u_in_diff_max <- 0
+for (i in unique(test_until1$breath_id)) {
+  test_until1[which(test_until1$breath_id==i), 'u_in_diff_max'] <- test_until1[which(test_until1$breath_id==i), 'u_in'] - test_until1[which(test_until1$breath_id==i), 'max_u_in']
+}
 
 ####################
 ### NUMBER OF CHANGE OF SIGN
@@ -125,6 +197,13 @@ for (i in unique(train_until1$breath_id)) {
   train_until1[which(train_until1$breath_id==i), 'n_change_sign_u_in'] <- ss
 }
 
+test_until1$n_change_sign_u_in <- 0
+for (i in unique(test_until1$breath_id)) {
+  x <- test_until1[which(test_until1$breath_id==i), 'u_in_diff1']
+  signs <- sign(x)
+  ss <- sum(signs[-1] != signs[-length(x)])
+  test_until1[which(test_until1$breath_id==i), 'n_change_sign_u_in'] <- ss
+}
 
 
 ###### plot

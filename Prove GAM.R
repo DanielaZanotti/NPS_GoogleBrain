@@ -11,12 +11,11 @@ library(gamm4)
 #plot(m)
 
 
-fm1<-gamm4(pressure ~ s(u_in) + s(time_step) + R + C + u_out ,data=train_s,random = ~ (u_in+time_step|breath_id))
+fm1<-gamm4(pressure ~ max_u_in + tot_u_in + R_C + s(u_in) ,data=train_until1,
+           random = ~ (u_in + time_step + tot_u_in + max_u_in | breath_id))
 
 summary(fm1$gam) ## summary of gam
 summary(fm1$mer) ## underlying mixed model
-
-
 
 
 

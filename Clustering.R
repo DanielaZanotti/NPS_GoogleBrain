@@ -3,34 +3,31 @@
 ################
 
 
-ts = data.frame()
-for(i in unique(train_until1$breath_id))
-{
-  x1 = train_until1[which(train_until1$breath_id==i), ]
+tr_te <- rbind(ts_train, ts_test)
 
-  ts = rbind(ts, x1[15,])
-}
-
-
-### CLUSTER 
-plot(ts$n_change_sign_u_in)
-cl.e <- dist(ts$n_change_sign_u_in, method='euclidean')
+cl.e <- dist(tr_te[10:17], method='euclidean')
 cl.ew <- hclust(cl.e, method='ward')
 plot(cl.ew, main='euclidean-ward', hang=-0.1, xlab='', labels=F, cex=0.6, sub='')
 rect.hclust(cl.ew, k=2)
-cluster.ew <- cutree(cl.ew, k=2)
+cluster.ew <- cutree(cl.ew, k=3)
 
-plot(ts$n_change_sign_u_in, col = cluster.ew)
 
 coph <- cophenetic(cl.ew)
 cor(coph, cl.e)
 
 
 j = 1
-for(i in seq(1,length(train_until1$id),30) ){
-  train_until1[i:(i+29),'clust'] = cluster.ew[j]
-  j = j +1
+for(i in unique(train_until1$breath_id))
+{
+  train_until1[which(train_until1$breath_id==i), 'clust'] = cluster.ew[j]
+  j = j+1
 }
+for(i in unique(test_until1$breath_id))
+{
+  test_until1[which(test_until1$breath_id==i), 'clust'] = cluster.ew[j]
+  j = j+1
+}
+
 
 ##################
 ### VISUALIZATION

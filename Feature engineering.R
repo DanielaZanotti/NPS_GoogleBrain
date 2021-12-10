@@ -27,11 +27,6 @@ for(i in seq(1,length(train_s$id),80) ){
   train_until1 = rbind(train_until1, t1)
 }
 
-
-attach(train_until1)
-
-detach(train_until1)
-
 ##########
 ### TEST
 ##########
@@ -225,13 +220,22 @@ plot(f_data1)
 ### VISUALIZATION OF NEW VARIABLES
 ################
 
-ts = data.frame()
+ts_train = data.frame()
 for(i in unique(train_until1$breath_id))
 {
   x1 = train_until1[which(train_until1$breath_id==i), ]
   l = dim(x1)[1]
-  ts = rbind(ts, x1[l,])
+  ts_train = rbind(ts_train, x1[l,])
 }
+
+ts_test = data.frame()
+for(i in unique(test_until1$breath_id))
+{
+  x1 = test_until1[which(test_until1$breath_id==i), ]
+  l = dim(x1)[1]
+  ts_test = rbind(ts_test, x1[l,])
+}
+
 
 x11()
 pairs(ts[10:17])
@@ -241,8 +245,9 @@ pairs(ts[10:17])
 ### CLUSTERING OF NEW VARIABLES
 ################
 
-### 2 CLUSTERS
-cl.e <- dist(ts[10:17], method='euclidean')
+tr_te <- rbind(ts_train, ts_test)
+
+cl.e <- dist(tr_te[10:17], method='euclidean')
 cl.ew <- hclust(cl.e, method='ward')
 plot(cl.ew, main='euclidean-ward', hang=-0.1, xlab='', labels=F, cex=0.6, sub='')
 rect.hclust(cl.ew, k=2)
@@ -252,10 +257,22 @@ cluster.ew <- cutree(cl.ew, k=2)
 coph <- cophenetic(cl.ew)
 cor(coph, cl.e)
 
+#j = 1
+#for(i in seq(1,length(train_s$id),80) ){
+#  train_s[i:(i+79),'clust'] = cluster.ew[j]
+#  j = j +1
+#}
+
 j = 1
-for(i in seq(1,length(train_s$id),80) ){
-  train_s[i:(i+79),'clust'] = cluster.ew[j]
-  j = j +1
+for(i in unique(train_until1$breath_id))
+{
+  train_until1[which(train_until1$breath_id==i), 'clust'] = cluster.ew[j]
+  j = j+1
+}
+for(i in unique(test_until1$breath_id))
+{
+  test_until1[which(test_until1$breath_id==i), 'clust'] = cluster.ew[j]
+  j = j+1
 }
 
 #time
@@ -274,7 +291,6 @@ for(i in unique(train_s$breath_id) ){
 
 grid <-  seq( 1, 80)
 f_data4 <- fData(grid,func_data4)
-
 
 
 #u_in

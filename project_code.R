@@ -411,8 +411,16 @@ for(i in unique(tt$breath_id)  ){
   uin = rbind(uin, t(x1))
 }
 
+#pressure
+pres = data.frame()
+for(i in unique(tt$breath_id) ){
+  x4=tt[which(tt$breath_id==i), 'pressure']
+  pres = rbind(pres, t(x4))
+}
+
 times = as.matrix(time)
 uins = as.matrix(uin)
+press = as.matrix(pres)
 
 # Plot of original functions
 matplot(t(times), t(uins), type='l', xlab='time step', ylab='u in')
@@ -433,12 +441,13 @@ for (i in unique(tt$breath_id))
 set.seed(2304)
 
 n_cluster=3
+
 fdakma_shift <- kmap(
   x=x, y=y, n_clust = n_cluster, 
   warping_method= 'shift',
-  similarity_method = 'pearson', 
-  center_method = 'mean'
-
+  similarity_method = 'l2', 
+  center_method = 'mean',
+  fence=TRUE
 )
 
 kmap_show_results(fdakma_shift)
@@ -449,18 +458,18 @@ for (i in seq(1,n_cluster )){
   clus = y[which(fdakma_shift$labels == i),]
   time = x[which(fdakma_shift$labels == i),]
   matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
-  
 } 
-
+matplot(t(time),t(uins), type='l', xlab='x', ylab='orig.func', col= fdakma_shift$labels)
+matplot(t(time),t(press), type='l', xlab='x', ylab='orig.func', col= fdakma_shift$labels)
 
 
 fdakma_affine <- kmap(
   x=x, y=y, n_clust = n_cluster, 
   warping_method = 'affine', 
-  similarity_method = 'pearson', 
+  similarity_method = 'l2', 
   center_method = 'mean'
-  
 )
+
 kmap_show_results(fdakma_affine)
 
 x11()
@@ -469,8 +478,43 @@ for (i in seq(1,n_cluster )){
   clus = y[which(fdakma_affine$labels == i),]
   time = x[which(fdakma_affine$labels == i),]
   matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
-  
 } 
+matplot(t(time),t(uins), type='l', xlab='x', ylab='orig.func', col= fdakma_affine$labels)
+matplot(t(time),t(press), type='l', xlab='x', ylab='orig.func', col= fdakma_affine$labels)
+
+
+fdakma_noalign <- kmap(
+  x=x, y=y, n_clust = n_cluster, 
+  warping_method = 'noalign', 
+  similarity_method = 'l2', 
+  center_method = 'mean',
+  fence=TRUE
+)
+
+kmap_show_results(fdakma_noalign)
+
+x11()
+par(mfrow=c(3,n_cluster/3))
+for (i in seq(1,n_cluster )){
+  clus = y[which(fdakma_noalign$labels == i),]
+  time = x[which(fdakma_noalign$labels == i),]
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+} 
+matplot(t(time),t(uins), type='l', xlab='x', ylab='orig.func', col= fdakma_noalign$labels)
+matplot(t(time),t(press), type='l', xlab='x', ylab='orig.func', col= fdakma_noalign$labels)
+
+###
+j = 1
+for(i in unique(train_until1$breath_id))
+{
+  train_until1[which(train_until1$breath_id==i), 'clust'] = fdakma_noalign$labels[j]
+  j = j+1
+}
+for(i in unique(test_until1$breath_id))
+{
+  test_until1[which(test_until1$breath_id==i), 'clust'] = fdakma_noalign$labels[j]
+  j = j+1
+}
 
 
 

@@ -1,9 +1,6 @@
 library(gamm4)
 library(RLRsim)
 
-#fgamm <- gamm(pressure ~ s(u_in, bs="cr") + s(time_step, bs="cr"), random = list(breath_id=~1), data = ts)
-
-
 ############
 ### GAM
 ############
@@ -28,20 +25,17 @@ pr <- predict.gam(m, test_until1)
 ### GAMM4 
 ###########
 
-#+ last_u_in + first_u_in + max_u_in + u_in_diff1 + 
-#+ u_in_diff2 + u_in_diff_max + n_change_sign_u_in 
-
-lin <- lm(pressure ~  R + C + tot_u_in + u_in_diff1 + u_in_diff2 + u_in_diff_max,
-          data=train_until1)
-
-fm1 <- gamm4(pressure ~ s(u_in) + R + C + tot_u_in + u_in_diff1 + u_in_diff2 + u_in_diff_max,
+fm1 <- gamm4(pressure ~ s(u_in) + R + C + tot_u_in + u_in_diff1 + u_in_diff2 ,
              data=train_until1,
-             random = ~ (1 | breath_id))
+             random = ~ (1| breath_id) + (1| clust))
 
 summary(fm1$gam) ## summary of gam
 summary(fm1$mer) ## underlying mixed model
 
-exactLRT(fm1, lin)
+#R-sq.(adj) =  0.5
+
+#F RATIO 
+(27.4+19.06)/19.06
 
 ####
 # plot

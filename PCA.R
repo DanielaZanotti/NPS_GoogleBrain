@@ -32,18 +32,20 @@ for(i in 1:3) barplot(load[,i], ylim = c(-1, 1), main=paste("PC",i))
 x11()
 layout(matrix(c(2,3,1,3),2,byrow=T))
 plot(pca, las=2, main='Principal components', ylim=c(0,5))
-barplot(sapply(ts[,9:16],sd)^2, las=2, main='Original Variables', ylim=c(0,4.5e4), ylab='Variances')
+barplot(sapply(variab.sd,sd)^2, las=2, main='Original Variables', ylim=c(0,2), ylab='Variances')
 plot(cumsum(pca$sd^2)/sum(pca$sd^2), type='b', axes=F, xlab='number of components', 
      ylab='contribution to the total variance', ylim=c(0,1))
 abline(h=1, col='blue')
 abline(h=0.8, lty=2, col='blue')
 box()
 axis(2,at=0:10/10,labels=0:10/10)
-axis(1,at=1:ncol(ts[,9:16]),labels=1:ncol(ts[,9:16]),las=2)
+axis(1,at=1:ncol(variab.sd),labels=1:ncol(variab.sd),las=2)
 
-scores.wea <- pc$scores
+scores.wea <- pca$scores
 scores.wea
 
-
-
+pc1 <- scores.wea[,1]
+pc2 <- scores.wea[,2]
+pc3 <- scores.wea[,3]
+pc4 <- scores.wea[,4]
 

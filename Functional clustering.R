@@ -59,15 +59,3 @@ for (i in seq(1,n_cluster )){
 } 
 
 
-
-fdakma_affine <- kma(
-  x=x, y=y, n.clust = 3, 
-  warping_method = 'affine', 
-  similarity_method = 'pearson', 
-  center_method = 'mean',
-  show_iter = TRUE,
-
-  #fence = TRUE
-  #,seeds = c(1,11,21) # you can give a little help to the algorithm...
-)
-kma.show.results(fdakma_affine)

@@ -1,4 +1,4 @@
-library(fdakma)
+library(fdakmapp)
 
 tt <- rbind(train_until1, test_until1)
 
@@ -37,27 +37,36 @@ for (i in unique(tt$breath_id))
 
 set.seed(2304)
 
-fdakma_shift <- kma(
-  x=x, y0=y, n.clust = 10, 
-  warping.method = 'shift', 
-  similarity.method = 'd0.L2', 
-  center.method = 'k-means',
-  show.iter = TRUE,
-  fence = TRUE
+n_cluster=3
+fdakma_shift <- kmap(
+  x=x, y=y, n_clust = n_cluster, 
+
+  similarity_method = 'pearson', 
+  center_method = 'mean',
+
   #,seeds = c(1,11,21) # you can give a little help to the algorithm...
 )
 
-kma.show.results(fdakma_shift)
+kmap_show_results(fdakma_shift)
+
+x11()
+par(mfrow=c(3,n_cluster/3))
+for (i in seq(1,n_cluster )){
+  clus = y[which(fdakma_shift$labels == i),1:30]
+  time = x[which(fdakma_shift$labels == i),1:30]
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+  
+} 
+
 
 
 fdakma_affine <- kma(
-  x=x, y0=y, n.clust = 3, 
-  warping.method = 'affine', 
-  similarity.method = 'd0.pearson', 
-  center.method = 'k-means',
-  show.iter = TRUE,
-  t.max = 0.05,
-  m.max = 0.05
+  x=x, y=y, n.clust = 3, 
+  warping_method = 'affine', 
+  similarity_method = 'pearson', 
+  center_method = 'mean',
+  show_iter = TRUE,
+
   #fence = TRUE
   #,seeds = c(1,11,21) # you can give a little help to the algorithm...
 )

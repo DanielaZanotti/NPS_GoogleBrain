@@ -1,5 +1,5 @@
 library(gamm4)
-library(RLRsim)
+library(knitr)
 
 ############
 ### GAM
@@ -99,6 +99,12 @@ plot(res[which(res$mod=='m3'), 'pred'], res[which(res$mod=='m2'), 'res_re'],
      xlab = 'pred model 2', ylab = 'res', main = 'Random effect residuals versus predictions by model')
 plot(res[which(res$mod=='m3'), 'pred'], res[which(res$mod=='m3'), 'res_re'], 
      xlab = 'pred model 3', ylab = 'res', main = '')
+
+#### AIC and BIC of random effects term
+aic <- AIC(m1$mer, m2$mer, m3$mer)
+aic$BIC <- BIC(m1$mer, m2$mer, m3$mer)$BIC
+
+kable(aic[order(aic$BIC), ])
 
 ####
 # plot

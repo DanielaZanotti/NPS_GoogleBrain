@@ -130,20 +130,52 @@ for(i in seq(1,length(train_s$id),80) ){
 
 
 ###################### FUNCTIONS VISUALIZATION #######################
-n=200
-k=203
+n=55
+k=60
 
 x11()
 par(mfrow = c(k-n+1,3))
 for (j in seq(n,k,1)){
   f1 <- fData(grid,func_data1[j,])
-
   f2 <- fData(grid,func_data2[j,])
   f3 <- fData(grid,func_data3[j,])
   plot(f1,main="in")
   plot(f2,main="out")
   plot(f3,main="pressure")
+  
+ 
 }
+
+
+x11()
+par(mfrow = c((k-n+1)/3,3))
+for (j in seq(n,k,1)){
+  
+  fsovr=rbind(func_data1[j,],func_data2[j,],func_data3[j,])
+  fsovrf <- fData(grid,fsovr)
+  plot(fsovrf)
+ 
+}
+
+fin=c()
+fpr=c()
+for (j in seq(n,k,1)){
+
+  fin=rbind(fin,func_data1[j,])
+  fpr=rbind(fpr,func_data3[j,])
+}
+
+
+finf <- fData(grid,fin)
+fprf <- fData(grid,fpr)
+x11()
+par(mfrow = c(1,2))
+plot(finf,main="in")
+plot(fprf,main="pressure")
+
+
+
+
 
 ###################### FEATURE ENGINEERING ###################
 

@@ -517,6 +517,34 @@ for(i in unique(test_until1$breath_id))
 }
 
 
+x11()
+plot(train_until1$u_in,train_until1$pressure, col=train_until1$clust )
+
+x11()
+plot(train_until1$tot_u_in, train_until1$pressure, col=train_until1$clust)
+
+x11()
+plot(ts_train$n_change_sign_u_in, ts_train$last_u_in, col=ts_train$clust)
+
+cluster1<-ts_train[which(ts_train$clust==1),]
+table(cluster1$R_C)
+barplot(table(cluster1$R_C))
+
+
+cluster2<-ts_train[which(ts_train$clust==2),]
+table(cluster2$R_C)
+barplot(table(cluster2$R_C))
+
+cluster3<-ts_train[which(ts_train$clust==3),]
+table(cluster3$R_C)
+barplot(table(cluster3$R_C))
+
+cluster11<-train_until1[which(train_until1$clust==1),]
+cluster22<-train_until1[which(train_until1$clust==2),]
+cluster33<-train_until1[which(train_until1$clust==3),]
+write.table(cluster11, file="data_cluster1.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(cluster22, file="data_cluster2.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(cluster33, file="data_cluster3.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
 
 ############################### DEPTH MEASURES ###########################
 

@@ -26,32 +26,46 @@ pr <- predict.gam(m, test_until1)
 ###########
 
 #gamm with random intercept by breath_id
-m1 <- gamm4(pressure ~ s(u_in) + tot_u_in + u_in_diff1 + u_in_diff2 + factor(clust) +
-                       + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
+m1 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(u_in_diff1) +s(u_in_diff2) + s(area) +
+              + factor(clust) + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
              data=train_until1,
              random = ~ (1| breath_id))
 
 #gamm with random intercept by clust
-m2 <- gamm4(pressure ~ s(u_in) + tot_u_in + u_in_diff1 + u_in_diff2 + factor(clust) +
-              + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
+m2 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(u_in_diff1) +s(u_in_diff2) + s(area) +
+              + factor(clust) + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
             data=train_until1,
             random = ~ (1| clust))
 
 #gamm with random intercept by breath_id & clust
-m3 <- gamm4(pressure ~ s(u_in) + tot_u_in + u_in_diff1 + u_in_diff2 + factor(clust) +
-                       + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
+m3 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(u_in_diff1) +s(u_in_diff2) + s(area) +
+              + factor(clust) + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
             data=train_until1,
-            random = ~ (1| breath_id) + (1| clust))
+            random = ~ (1| breath_id) + (1| clust) )
 
-summary(m3$gam) ## summary of gam
-summary(m3$mer) ## underlying mixed model
+#gamm with random intercept by breath_id & clust pearson
+m4 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(u_in_diff1) +s(u_in_diff2) + s(area) +
+              + factor(clust) + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
+            data=train_until1,
+            random = ~ (1| breath_id) + (1| clust_pearson) )
+
+#gamm with random intercept by breath_id & clust  & clust pearson
+m5 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(u_in_diff1) +s(u_in_diff2) + s(area) +
+              + factor(clust) + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50'),
+            data=train_until1,
+            random = ~ (1| breath_id) + (1| clust) + (1| clust_pearson) )
+
+summary(m1$gam) ## summary of gam
+summary(m1$mer) ## underlying mixed model
 
 
 #F RATIO 
 (27.4+19.06)/19.06
 
-mods <- list(m1, m2, m3)
-names(mods) <- c("m1", "m2", "m3")
+plot(m1$gam)
+
+mods <- list(m1, m2, m3, m4)
+names(mods) <- c("m1", "m2", "m3", "m4")
 
 #### residuals gam (uguale per tutti i modelli)
 res <- lapply(mods, function(x) data.frame(res = residuals(x$gam), pred = predict(x$gam)))
@@ -60,14 +74,14 @@ res <- do.call("rbind", res)
 res$mod <- mod
 
 x11()
-hist(res[which(res$mod=='m3'), 'res'], xlab = '', main = 'GAM term residuals distribution')
+hist(res[which(res$mod=='m1'), 'res'], xlab = '', main = 'GAM term residuals distribution')
 
 x11()
-qqnorm(res[which(res$mod=='m3'), 'res'], main = 'GAM term residuals quantile plot')
-qqline(res[which(res$mod=='m3'), 'res'], col='blue')
+qqnorm(res[which(res$mod=='m1'), 'res'], main = 'GAM term residuals quantile plot')
+qqline(res[which(res$mod=='m1'), 'res'], col='blue')
 
 x11()
-plot(res[which(res$mod=='m3'), 'pred'], res[which(res$mod=='m3'), 'res'], 
+plot(res[which(res$mod=='m1'), 'pred'], res[which(res$mod=='m1'), 'res'], 
      xlab = 'pred', ylab = 'res', main = 'GAM term residuals versus predictions')
 
 #### residuals random effects
@@ -76,33 +90,41 @@ mod_re <- rep(names(mods), unlist(lapply(res_re, nrow)))
 res_re <- do.call("rbind", res_re)
 res_re$mod <- mod_re
 
+#Random effect residuals distribution by model
 x11()
-par(mfrow=c(1,3))
-hist(res_re[which(res_re$mod=='m1'), 'res_re'], xlab = 'Model 1', main = '')
-hist(res_re[which(res_re$mod=='m2'), 'res_re'], xlab = 'Model 2', main = 'Random effect residuals distribution by model')
-hist(res_re[which(res_re$mod=='m3'), 'res_re'], xlab = 'Model 3', main = '')
+par(mfrow=c(2,2))
+hist(res_re[which(res_re$mod=='m1'), 'res_re'], xlab = 'Residuals', main = 'Model 1')
+hist(res_re[which(res_re$mod=='m2'), 'res_re'], xlab = 'Residuals', main = 'Model 2')
+hist(res_re[which(res_re$mod=='m3'), 'res_re'], xlab = 'Residuals', main = 'Model 3')
+hist(res_re[which(res_re$mod=='m4'), 'res_re'], xlab = 'Residuals', main = 'Model 4')
 
+#Random effect residuals quantile plot by model
 x11()
-par(mfrow=c(3,1))
-qqnorm(res_re[which(res_re$mod=='m1'), 'res_re'], main = '')
+par(mfrow=c(2,2))
+qqnorm(res_re[which(res_re$mod=='m1'), 'res_re'], main = 'Model 1')
 qqline(res_re[which(res_re$mod=='m1'), 'res_re'], col='blue')
-qqnorm(res_re[which(res_re$mod=='m2'), 'res_re'], main = 'Random effect residuals quantile plot by model')
+qqnorm(res_re[which(res_re$mod=='m2'), 'res_re'], main = 'Model 2')
 qqline(res_re[which(res_re$mod=='m2'), 'res_re'], col='blue')
-qqnorm(res_re[which(res_re$mod=='m3'), 'res_re'], main = '')
+qqnorm(res_re[which(res_re$mod=='m3'), 'res_re'], main = 'Model 3')
 qqline(res_re[which(res_re$mod=='m3'), 'res_re'], col='blue')
+qqnorm(res_re[which(res_re$mod=='m4'), 'res_re'], main = 'Model 4')
+qqline(res_re[which(res_re$mod=='m4'), 'res_re'], col='blue')
 
+#Random effect residuals versus predictions by model
 x11()
-par(mfrow=c(1,3))
+par(mfrow=c(2,2))
 plot(res[which(res$mod=='m3'), 'pred'], res[which(res$mod=='m1'), 'res_re'], 
-     xlab = 'pred model 1', ylab = 'res', main = '')
+     xlab = 'prediction', ylab = 'res', main = 'Model 1')
 plot(res[which(res$mod=='m3'), 'pred'], res[which(res$mod=='m2'), 'res_re'], 
-     xlab = 'pred model 2', ylab = 'res', main = 'Random effect residuals versus predictions by model')
+     xlab = 'prediction', ylab = 'res', main = 'Model 2')
 plot(res[which(res$mod=='m3'), 'pred'], res[which(res$mod=='m3'), 'res_re'], 
-     xlab = 'pred model 3', ylab = 'res', main = '')
+     xlab = 'prediction', ylab = 'res', main = 'Model 3')
+plot(res[which(res$mod=='m4'), 'pred'], res[which(res$mod=='m4'), 'res_re'], 
+     xlab = 'prediction', ylab = 'res', main = 'Model 4')
 
 #### AIC and BIC of random effects term
-aic <- AIC(m1$mer, m2$mer, m3$mer)
-aic$BIC <- BIC(m1$mer, m2$mer, m3$mer)$BIC
+aic <- AIC(m1$mer, m2$mer, m3$mer, m4$mer)
+aic$BIC <- BIC(m1$mer, m2$mer, m3$mer, m4$mer)$BIC
 
 kable(aic[order(aic$BIC), ])
 

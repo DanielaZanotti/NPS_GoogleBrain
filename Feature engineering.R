@@ -145,25 +145,29 @@ for (i in unique(test_until1$breath_id)) {
 
 train_until1$u_in_diff1 <- 0
 train_until1$u_in_diff2 <- 0
+train_until1$u_in_diff3 <- 0
 
 for (i in unique(train_until1$breath_id)) {
   xx <- train_until1[which(train_until1$breath_id==i), 'u_in']
   l <- length(xx)
-  shift <- c(0, 0, xx)
-  train_until1[which(train_until1$breath_id==i), 'u_in_diff1'] <- shift[3:(l+2)] - shift[2:(l+1)]
-  train_until1[which(train_until1$breath_id==i), 'u_in_diff2'] <- shift[3:(l+2)] - shift[1:l]
+  shift <- c(0, 0, 0, xx)
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff1'] <- shift[4:(l+3)] - shift[3:(l+2)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff2'] <- shift[4:(l+3)] - shift[2:(l+1)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff3'] <- shift[4:(l+3)] - shift[1:l]
 }
 
 
 test_until1$u_in_diff1 <- 0
 test_until1$u_in_diff2 <- 0
+test_until1$u_in_diff3 <- 0
 
 for (i in unique(test_until1$breath_id)) {
   xx <- test_until1[which(test_until1$breath_id==i), 'u_in']
   l <- length(xx)
-  shift <- c(0, 0, xx)
-  test_until1[which(test_until1$breath_id==i), 'u_in_diff1'] <- shift[3:(l+2)] - shift[2:(l+1)]
-  test_until1[which(test_until1$breath_id==i), 'u_in_diff2'] <- shift[3:(l+2)] - shift[1:l]
+  shift <- c(0, 0, 0, xx)
+  test_until1[which(test_until1$breath_id==i), 'u_in_diff1'] <- shift[4:(l+3)] - shift[3:(l+2)]
+  test_until1[which(test_until1$breath_id==i), 'u_in_diff2'] <- shift[4:(l+3)] - shift[2:(l+1)]
+  test_until1[which(test_until1$breath_id==i), 'u_in_diff3'] <- shift[4:(l+3)] - shift[1:l]
 }
 
 ################
@@ -200,6 +204,30 @@ for (i in unique(test_until1$breath_id)) {
   test_until1[which(test_until1$breath_id==i), 'n_change_sign_u_in'] <- ss
 }
 
+###################
+### AREA
+###################
+
+train_until1$area <- 0
+
+for (i in unique(train_until1$breath_id)) {
+  u <- train_until1[which(train_until1$breath_id==i), 'u_in']
+  tmp <- train_until1[which(train_until1$breath_id==i), 'time_step']
+  l <- length(tmp)
+  shift <- c(0, tmp)
+  train_until1[which(train_until1$breath_id==i), 'area'] <- (shift[2:(l+1)] - shift[1:l])*u
+}
+
+
+test_until1$area <- 0
+
+for (i in unique(test_until1$breath_id)) {
+  u <- test_until1[which(test_until1$breath_id==i), 'u_in']
+  tmp <- test_until1[which(test_until1$breath_id==i), 'time_step']
+  l <- length(tmp)
+  shift <- c(0, tmp)
+  test_until1[which(test_until1$breath_id==i), 'area'] <- (shift[2:(l+1)] - shift[1:l])*u
+}
 
 ###### plot
 func_data1=data.frame()

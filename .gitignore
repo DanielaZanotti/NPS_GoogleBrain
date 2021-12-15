@@ -1,5 +1,9 @@
 **/.DS_Store
 **/Data
+<<<<<<< HEAD
+**/main.py
+=======
 train.csv
 .RData
 .Rhistory
+>>>>>>> 7826ac73a2422d60746d579df0b604685dc057b1

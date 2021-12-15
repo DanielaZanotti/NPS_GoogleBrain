@@ -309,7 +309,7 @@ for(i in unique(test_until1$breath_id))
 
 
 x11()
-pairs(ts[10:17])
+pairs(ts_train[10:17])
 
 ###################### MULTIVARIATE CLUSTERING ################################
 tr_te <- rbind(ts_train, ts_test)

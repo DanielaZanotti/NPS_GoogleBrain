@@ -4,11 +4,14 @@ library(readr)
 library(tidyverse) 
 library(roahd)
 library(fdakmapp)
+library(data.table)
 ########################### LOAD DATA ################################
 df = read.table("Data/train.csv",header=TRUE,sep=",")
 head(df)
 attach(df)
 
+tab = fread("Data/train.csv")
+tab_clus = tab[, .(u_in = u_in[1:30], time_step =  time_step[1:30]), by = .(breath_id)]
 
 ###################### FUNCTIONS SAMPLING ############################
 

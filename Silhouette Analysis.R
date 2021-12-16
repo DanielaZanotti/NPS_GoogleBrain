@@ -55,35 +55,6 @@ for (i in unique(tt$breath_id))
 #Silhoutte Analysis
 set.seed(2304)
 
-compute_wss = function(clus_out, x,y,k){
-  
-  wss.c = 0
-  for(j in seq(1,k)){
-    indexes = which(! is.na(clus_out$y.centers.final[j, ,1]))
-    medoid_y = clus_out$y.centers.final[j,indexes,1]
-    medoid_x = clus_out$x.centers.final[indexes]
-    
-    #estraggo i breath nel cluster
-    selected_ids = which(clus_out$labels == j)
-    #prendo le righe corrispondenti a quel breath
-    for(sel in selected_ids){
-      if(sum(y[sel,]) == 0 ){
-        next
-      }
-      sim = (1 - kma.similarity(x.f = medoid_x, y0.f = medoid_y,
-                           x.g =x[sel,] , y0.g = y[sel,]  , similarity.method = "d0.pearson", unif.grid = TRUE))^2
-      
-      wss.c = wss.c + sim 
-      wss.c
-      
-      
-    }
-    
-  }
-  return(wss.c)
-}
-
-
 n_cluster=50
 wss = c()
 for(i in seq(1,n_cluster) ){
@@ -98,17 +69,16 @@ for(i in seq(1,n_cluster) ){
       center_method = 'mean',
       fence=TRUE
     )
-    if(!(is_empty(fdakma_noalign_pearson$y.centers.final) )  ){
-      wss.curr = compute_wss(fdakma_noalign_pearson,x,y,i)
-      m = c(m,wss.curr)
-      its = its + 1
-    }
+  its = its + 1
+  wss.curr = sum( (1 - abs(fdakma_noalign_pearson$similarity.final))^2 )
+  m = c(m,wss.curr)
   }
    wss = c(wss,mean(m))
 }
 
 plot(wss , type = "l")
 #Abbiamo scelto 25 cluster
+write.csv(wss, "wss.csv")
 
 
 

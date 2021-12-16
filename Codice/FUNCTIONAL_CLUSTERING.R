@@ -90,7 +90,7 @@ fdakma_pearson <- kmap(
 kmap_show_results(fdakma_pearson)
 
 x11()
-par(mfrow=c(4,4))
+par(mfrow=c(5,5))
 for (i in seq(1,n_cluster )){
   clus = y[which(fdakma_pearson$labels == i),]
   time = x[which(fdakma_pearson$labels == i),]

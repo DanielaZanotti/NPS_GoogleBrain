@@ -1,10 +1,15 @@
 library(fdakmapp)
+library(purrr)
 train_until1 = read.table("trainset.csv",header=TRUE,sep=",")
 test_until1 = read.table("testset.csv",header=TRUE,sep=",")
 
 tab = fread("Data/train.csv")
 tab_clus = tab[, .(u_in = u_in[1:30], time_step =  time_step[1:30]), by = .(breath_id)]
 tt <- data.frame(tab_clus[breath_id<= 5200])
+
+f = function(vect,tab){
+  tab <<- rbind(tab, t(vect))
+}
 
 #time
 time = data.frame()
@@ -50,41 +55,13 @@ for (i in unique(tt$breath_id))
 #Silhoutte Analysis
 set.seed(2304)
 
-compute_wss = function(clus_out, x,y,k){
-  
-  wss.c = 0
-  for(j in seq(1,k)){
-   
-    medoid_y = clus_out$y.centers.final[j,1:97,1]
-    medoid_x = clus_out$x.centers.final[1:97]
-    
-    #estraggo i breath nel cluster
-    selected_ids = which(clus_out$labels == j)
-    #prendo le righe corrispondenti a quel breath
-    for(sel in selected_ids){
-      if(sum(y[sel,]) == 0 ){
-        next
-      }
-      sim = (1 - kma.similarity(x.f = medoid_x, y0.f = medoid_y,
-                           x.g =x[sel,] , y0.g = y[sel,]  , similarity.method = "d0.pearson", unif.grid = TRUE))^2
-      
-      wss.c = wss.c + sim 
-      wss.c
-      
-      
-    }
-    
-  }
-  return(wss.c)
-}
-
-
-n_cluster=30
+n_cluster=50
 wss = c()
 for(i in seq(1,n_cluster) ){
   print(i)
   m = c()
-  for(rip in seq(1,5)){
+  its = 0
+  while(its <= 5){
     fdakma_noalign_pearson <- kmap(
       x=x, y=y, n_clust = i, 
       warping_method = 'noalign', 
@@ -92,15 +69,39 @@ for(i in seq(1,n_cluster) ){
       center_method = 'mean',
       fence=TRUE
     )
-    wss.curr = compute_wss(fdakma_noalign_pearson,x,y,i)
-    m = c(m,wss.curr)
+  its = its + 1
+  wss.curr = sum( (1 - abs(fdakma_noalign_pearson$similarity.final))^2 )
+  m = c(m,wss.curr)
   }
-  
-  print(wss.curr)
-  wss = c(wss,mean(m))
-  
-  
+   wss = c(wss,mean(m))
 }
+
+plot(wss , type = "l")
+#Abbiamo scelto 25 cluster
+write.csv(wss, "wss.csv")
+
+fdakma_noalign_pearson <- kmap(
+  x=x, y=y, n_clust = 25, 
+  warping_method = 'noalign', 
+  similarity_method = 'pearson', 
+  center_method = 'mean',
+  fence=TRUE
+)
+
+table(fdakma_noalign_pearson$labels)
+
+x11()
+par(mfrow=c(5,5))
+for (i in seq(1,n_cluster )){
+  clus = y[which(fdakma_noalign_pearson$labels == i),]
+  time = x[which(fdakma_noalign_pearson$labels == i),]
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+} 
+i = 11
+x11()
+clus = y[which(fdakma_noalign_pearson$labels == i),]
+time = x[which(fdakma_noalign_pearson$labels == i),]
+matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
 
 
 

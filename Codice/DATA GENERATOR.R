@@ -77,6 +77,21 @@ write.table(time_step_row, file="time_step_row.csv", quote=T, sep=",", dec=".", 
 
 #################### DATA FOR FEATURE ENGINEERING AND GAMM ###########################################
 
-train_until1<-train_until1_clust[1:18000,]
+#train_until1<-train_until1_clust[1:18000,]
+
+r_num2 <- c()
+for( r in unique(train_until1_clust$R))
+{
+  for( c in unique(train_until1_clust$C))
+  {
+    d <- unique(train_until1_clust[which(train_until1_clust$R==r & train_until1_clust$C==c),'breath_id'])
+    rn2 <- sample(unique(d), length(d)*0.1, replace = F)
+    r_num2 <- c(r_num2, rn2 )
+  }
+}
+
+# sampling
+train_until1 <- train_until1_clust %>% 
+  filter(breath_id %in% r_num2)
 
 write.table(train_until1, file="training_set_feature.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)

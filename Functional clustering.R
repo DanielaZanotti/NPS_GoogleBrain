@@ -45,7 +45,7 @@ for (i in unique(tt$breath_id))
 
 set.seed(2304)
 
-n_cluster=3
+n_cluster = 10
 
 fdakma_shift <- kmap(
   x=x, y=y, n_clust = n_cluster, 
@@ -99,7 +99,7 @@ fdakma_noalign <- kmap(
 kmap_show_results(fdakma_noalign)
 
 x11()
-par(mfrow=c(n_cluster,1))
+par(mfrow=c(5,2))
 for (i in seq(1,n_cluster )){
   clus = y[which(fdakma_noalign$labels == i),]
   time = x[which(fdakma_noalign$labels == i),]
@@ -120,8 +120,10 @@ fdakma_noalign_pearson <- kmap(
 
 kmap_show_results(fdakma_noalign_pearson)
 
+table(fdakma_noalign_pearson$labels)
+
 x11()
-par(mfrow=c(n_cluster,1))
+par(mfrow=c(5,2))
 for (i in seq(1,n_cluster )){
   clus = y[which(fdakma_noalign_pearson$labels == i),]
   time = x[which(fdakma_noalign_pearson$labels == i),]
@@ -136,12 +138,12 @@ matplot(t(time),t(press), type='l', xlab='x', ylab='orig.func', col= fdakma_noal
 j = 1
 for(i in unique(train_until1$breath_id))
 {
-  train_until1[which(train_until1$breath_id==i), 'clust_pearson'] = fdakma_noalign_pearson$labels[j]
+  train_until1[which(train_until1$breath_id==i), 'clust_tanti'] = fdakma_noalign$labels[j]
   j = j+1
 }
 for(i in unique(test_until1$breath_id))
 {
-  test_until1[which(test_until1$breath_id==i), 'clust_pearson'] = fdakma_noalign_pearson$labels[j]
+  test_until1[which(test_until1$breath_id==i), 'clust_tanti'] = fdakma_noalign$labels[j]
   j = j+1
 }
 

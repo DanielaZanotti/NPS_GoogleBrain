@@ -94,7 +94,7 @@ par(mfrow=c(5,5))
 for (i in seq(1,n_cluster )){
   clus = y[which(fdakma_pearson$labels == i),]
   time = x[which(fdakma_pearson$labels == i),]
-  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "blue")
 } 
 
 

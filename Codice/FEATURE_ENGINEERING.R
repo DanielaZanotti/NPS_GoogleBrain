@@ -72,14 +72,18 @@ for (i in unique(train_until1$breath_id)) {
 train_until1$u_in_diff1 <- 0
 train_until1$u_in_diff2 <- 0
 train_until1$u_in_diff3 <- 0
+train_until1$u_in_diff4 <- 0
+train_until1$u_in_diff5 <- 0
 
 for (i in unique(train_until1$breath_id)) {
   xx <- train_until1[which(train_until1$breath_id==i), 'u_in']
   l <- length(xx)
-  shift <- c(0, 0, 0, xx)
-  train_until1[which(train_until1$breath_id==i), 'u_in_diff1'] <- shift[4:(l+3)] - shift[3:(l+2)]
-  train_until1[which(train_until1$breath_id==i), 'u_in_diff2'] <- shift[4:(l+3)] - shift[2:(l+1)]
-  train_until1[which(train_until1$breath_id==i), 'u_in_diff3'] <- shift[4:(l+3)] - shift[1:l]
+  shift <- c(0, 0, 0, 0, 0, xx)
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff1'] <- shift[6:(l+5)] - shift[5:(l+4)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff2'] <- shift[6:(l+5)] - shift[4:(l+3)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff3'] <- shift[6:(l+5)] - shift[3:(l+2)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff4'] <- shift[6:(l+5)] - shift[2:(l+1)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_diff5'] <- shift[6:(l+5)] - shift[1:l]
 }
 
 
@@ -126,6 +130,11 @@ for (i in unique(train_until1$breath_id)) {
   shift <- c(0, tmp)
   train_until1[which(train_until1$breath_id==i), 'area'] <- (shift[2:(l+1)] - shift[1:l])*u
 }
+
+
+
+
+
 
 
 #######################

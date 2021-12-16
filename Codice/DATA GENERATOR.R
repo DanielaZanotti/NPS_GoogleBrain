@@ -79,13 +79,20 @@ write.table(time_step_row, file="time_step_row.csv", quote=T, sep=",", dec=".", 
 
 #train_until1<-train_until1_clust[1:18000,]
 
+j = 1
+for(i in unique(train_until1_clust$breath_id))
+{
+  train_until1_clust[which(train_until1_clust$breath_id==i), 'clust'] = fdakma_pearson$labels[j]
+  j = j+1
+}
+
 r_num2 <- c()
 for( r in unique(train_until1_clust$R))
 {
   for( c in unique(train_until1_clust$C))
   {
     d <- unique(train_until1_clust[which(train_until1_clust$R==r & train_until1_clust$C==c),'breath_id'])
-    rn2 <- sample(unique(d), length(d)*0.1, replace = F)
+    rn2 <- sample(unique(d), length(d)*0.05, replace = F)
     r_num2 <- c(r_num2, rn2 )
   }
 }

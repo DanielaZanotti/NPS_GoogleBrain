@@ -1,10 +1,15 @@
 library(fdakmapp)
+library(purrr)
 train_until1 = read.table("trainset.csv",header=TRUE,sep=",")
 test_until1 = read.table("testset.csv",header=TRUE,sep=",")
 
 tab = fread("Data/train.csv")
 tab_clus = tab[, .(u_in = u_in[1:30], time_step =  time_step[1:30]), by = .(breath_id)]
 tt <- data.frame(tab_clus[breath_id<= 5200])
+
+f = function(vect,tab){
+  tab <<- rbind(tab, t(vect))
+}
 
 #time
 time = data.frame()
@@ -54,9 +59,9 @@ compute_wss = function(clus_out, x,y,k){
   
   wss.c = 0
   for(j in seq(1,k)){
-   
-    medoid_y = clus_out$y.centers.final[j,1:97,1]
-    medoid_x = clus_out$x.centers.final[1:97]
+    indexes = which(! is.na(clus_out$y.centers.final[j, ,1]))
+    medoid_y = clus_out$y.centers.final[j,indexes,1]
+    medoid_x = clus_out$x.centers.final[indexes]
     
     #estraggo i breath nel cluster
     selected_ids = which(clus_out$labels == j)
@@ -79,12 +84,13 @@ compute_wss = function(clus_out, x,y,k){
 }
 
 
-n_cluster=30
+n_cluster=50
 wss = c()
 for(i in seq(1,n_cluster) ){
   print(i)
   m = c()
-  for(rip in seq(1,5)){
+  its = 0
+  while(its <= 5){
     fdakma_noalign_pearson <- kmap(
       x=x, y=y, n_clust = i, 
       warping_method = 'noalign', 
@@ -92,15 +98,19 @@ for(i in seq(1,n_cluster) ){
       center_method = 'mean',
       fence=TRUE
     )
-    wss.curr = compute_wss(fdakma_noalign_pearson,x,y,i)
-    m = c(m,wss.curr)
+    if(!(is_empty(fdakma_noalign_pearson$y.centers.final) )  ){
+      wss.curr = compute_wss(fdakma_noalign_pearson,x,y,i)
+      m = c(m,wss.curr)
+      its = its + 1
+    }
   }
-  
-  print(wss.curr)
-  wss = c(wss,mean(m))
-  
-  
+   wss = c(wss,mean(m))
 }
+
+plot(wss , type = "l")
+#Abbiamo scelto 25 cluster
+
+
 
 
 

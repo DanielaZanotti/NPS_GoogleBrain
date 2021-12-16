@@ -80,7 +80,28 @@ plot(wss , type = "l")
 #Abbiamo scelto 25 cluster
 write.csv(wss, "wss.csv")
 
+fdakma_noalign_pearson <- kmap(
+  x=x, y=y, n_clust = 25, 
+  warping_method = 'noalign', 
+  similarity_method = 'pearson', 
+  center_method = 'mean',
+  fence=TRUE
+)
 
+table(fdakma_noalign_pearson$labels)
+
+x11()
+par(mfrow=c(5,5))
+for (i in seq(1,n_cluster )){
+  clus = y[which(fdakma_noalign_pearson$labels == i),]
+  time = x[which(fdakma_noalign_pearson$labels == i),]
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+} 
+i = 11
+x11()
+clus = y[which(fdakma_noalign_pearson$labels == i),]
+time = x[which(fdakma_noalign_pearson$labels == i),]
+matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
 
 
 

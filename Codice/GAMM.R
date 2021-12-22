@@ -19,10 +19,16 @@ m1 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) +  n_change_sign_u_in +
             data=train_until1,
             random = ~ (1| breath_id))
 
-summary(m1$gam) ## summary of gam
+summary(m3$gam) ## summary of gam
 summary(m1$mer) ## underlying mixed model
 plot(m1$gam)
 
+m3 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) +  n_change_sign_u_in + s(area) +
+              + s(u_in_diff1) + s(u_in_diff2) + s(u_in_diff3) + s(u_in_diff4) +
+              + factor(R_C == '20_20') + factor(R_C == '20_50') + factor(R_C == '5_20') + factor(R_C == '5_50') +
+                +factor(clust==8) + factor(clust==24) + factor(clust==25) ,
+            data=train_until1,
+            random = ~ (1| breath_id))
 
 m2 <- gamm4(pressure ~ time_step + s(u_in) + s(tot_u_in) + n_change_sign_u_in + s(area) +
               + s(u_in_diff1) + s(u_in_diff2) + s(u_in_diff3) + s(u_in_diff4) + 

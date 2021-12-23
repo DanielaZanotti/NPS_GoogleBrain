@@ -1,6 +1,5 @@
 #################### LIBRARIES ####################
 
-
 library(roahd)
 library(readr)
 library(tidyverse) 
@@ -14,8 +13,8 @@ library(fda)
 x = read.table("Data/time_step_row.csv",header=TRUE,sep=",")
 y = read.table("Data/u_in_row.csv",header=TRUE,sep=",")
 
-y<-as.matrix(u_in_row)
-x<-as.matrix(time_step_row)
+y<-as.matrix(y)
+x<-as.matrix(x)
 
 set.seed(2304)
 
@@ -25,7 +24,7 @@ abscissa <- seq(0, 1, length.out=30)
 NT <- length(abscissa)
 ty <- t(y)
 
-m <- 6        # spline order 
+m <- 6       # spline order 
 degree <- m-1    # spline degree 
 
 # generalized cross-validation
@@ -57,18 +56,21 @@ for( i in 1:30)
   abs <- rbind(abs, abscissa)
 }
 
-par(mfrow=c(2,1))
-plot(t(x[3,]),t(y[3,]),xlab="t",ylab="observed data", type='l', ylim = c(-50, 50))
-points(t(x[3,]),t(Xss0)[3,] ,type="l",col="blue",lwd=2)
-points(t(x[3,]),t(Xss1)[3,] ,type="l",col="red",lwd=2)
+plot(t(x[222,]),t(y[222,]),xlab="t",ylab="observed data", type='l', ylim = c(-50, 50))
+points(t(x[222,]),t(Xss0)[222,] ,type="l",col="blue",lwd=2)
+points(t(x[222,]),t(Xss1)[222,] ,type="l",col="red",lwd=2)
 
 y_smooth <- t(Xss0)
 y1 <- t(Xss1)
 
+write.table(y_smooth, file="Data/u_in_row_smooth.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(y1, file="Data/u_in_row_derivative.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+
+
 #################### L2 CLUSTERING ########################
 
 
-n_cluster=25
+n_cluster=30
 
 
 fdakma_noalign_l2 <- kmap(
@@ -127,7 +129,7 @@ plot(wss , type = "l")
 n_cluster=25
 
 fdakma_pearson <- kmap(
-  x=x, y=y, n_clust = n_cluster, 
+  x=x, y=y,  n_clust = n_cluster, 
   warping_method= 'noalign',
   similarity_method = 'pearson', 
   center_method = 'mean',

@@ -6,6 +6,7 @@ library(tidyverse)
 library(roahd)
 library(fdakmapp)
 library(data.table)
+
 ################################# LOAD DATA #####################################
 train_until1 = read.table("Data/trainining_set_feature.csv",header=TRUE,sep=",")
 
@@ -132,6 +133,27 @@ for (i in unique(train_until1$breath_id)) {
 }
 
 
+#####################
+### SHIFT u_in
+#####################
+
+train_until1$u_in_shift1 <- 0
+train_until1$u_in_shift2 <- 0
+train_until1$u_in_shift3 <- 0
+train_until1$u_in_shift4 <- 0
+train_until1$u_in_shift5 <- 0
+
+for (i in unique(train_until1$breath_id)) {
+  xx <- train_until1[which(train_until1$breath_id==i), 'u_in']
+  l <- length(xx)
+  shift <- c(xx[1], xx[1], xx[1], xx[1], xx[1], xx)
+  train_until1[which(train_until1$breath_id==i), 'u_in_shift1'] <- shift[5:(l+4)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_shift2'] <- shift[4:(l+3)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_shift3'] <- shift[3:(l+2)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_shift4'] <- shift[2:(l+1)]
+  train_until1[which(train_until1$breath_id==i), 'u_in_shift5'] <- shift[1:l]
+}
+
 
 
 
@@ -150,6 +172,6 @@ for(i in unique(train_until1$breath_id))
 
 
 #### save
-write.table(train_until1, file="trainset_GAMM.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(train_until1, file="Data/trainset_GAMM_full.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
 
 

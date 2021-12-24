@@ -42,7 +42,7 @@ train_until1_tab = train_s_tab[, .(id=id[1:30], R=R[1:30], C=C[1:30],time_step =
 train_until1_clust<-data.frame(train_until1_tab)
 
 # salvare i dati, e caricarli senza dover ogni volta caricare tutto il datset
-write.table(train_until1_clust, file="trainset_clustering.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(train_until1_clust, file="Data/trainset_clustering.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
 
 
 
@@ -59,7 +59,7 @@ f= function(vect){
 
 func_data1=train_until1_tab[,f(u_in),by=breath_id] 
 
-write.table(u_in_row, file="u_in_row.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(u_in_row, file="Data/u_in_row.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
 
 
 i=1
@@ -71,13 +71,15 @@ g= function(vect){
 
 times=train_until1_tab[,g(time_step),by=breath_id] 
 
-write.table(time_step_row, file="time_step_row.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(time_step_row, file="Data/time_step_row.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
 
 
 
 #################### DATA FOR FEATURE ENGINEERING AND GAMM ###########################################
 
 #train_until1<-train_until1_clust[1:18000,]
+
+train_until1_clust = read.table("Data/trainset_full_clustering.csv",header=TRUE,sep=",")
 
 j = 1
 for(i in unique(train_until1_clust$breath_id))
@@ -101,4 +103,4 @@ for( r in unique(train_until1_clust$R))
 train_until1 <- train_until1_clust %>% 
   filter(breath_id %in% r_num2)
 
-write.table(train_until1, file="training_set_feature.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
+write.table(train_until1, file="Data/training_set_feature.csv", quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)

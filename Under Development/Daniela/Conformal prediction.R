@@ -28,16 +28,38 @@ mu=colMeans(t_set)
 res=c_set-mu
 ncm=apply(res,2,max)
 ncm_sort=c(sort(ncm),Inf)
-d=ncm_sort[ceiling((n/2 + 1)*(1-alpha))]
+m <- min(n, 30)
+d=ncm_sort[ceiling((m/2 + 1)*(1-alpha))]
 
 matplot(cbind(mu,mu+d,mu-d),type='l')
 
 
+i = 58
+plot(test$time_step[((i-1)*30 + 1):(i*30)],mu, type = "l", col ="red", ylim = c(-30, 60))
+lines(test$time_step[((i-1)*30 + 1):(i*30)], mu+d, type='l')
+lines(test$time_step[((i-1)*30 + 1):(i*30)], mu-d, type='l')
+lines(test$time_step[((i-1)*30 + 1):(i*30)],pred_gam[((i-1)*30 + 1):(i*30)], col='blue')
+
+
+
 #scale the amplitude
 S=apply(t_set,2,var)
+SS <- sqrt(S)
 res=(c_set-mu)/S
 ncm=apply(res,2,max)
 ncm_sort=c(sort(ncm),Inf)
-d=ncm_sort[ceiling((n/2 + 1)*(1-alpha))]
+m <- min(n, 30)
+d=ncm_sort[ceiling((m/2 + 1)*(1-alpha))]
 
 matplot(cbind(mu,mu+(d*S),mu-(d*S)),type='l')
+
+matplot(cbind(mu,mu+(d*SS),mu-(d*SS)),type='l')
+
+i = 37
+plot(test$time_step[((i-1)*30 + 1):(i*30)],mu, type = "l", col ="red", ylim = c(-40, 40))
+lines(test$time_step[((i-1)*30 + 1):(i*30)], mu+(d*SS), type='l')
+lines(test$time_step[((i-1)*30 + 1):(i*30)], mu-(d*SS), type='l')
+lines(test$time_step[((i-1)*30 + 1):(i*30)],pred_gam[((i-1)*30 + 1):(i*30)], col='blue')
+
+
+

@@ -84,7 +84,7 @@ pred_gam = predict(m1, newdata= test)
 
 score = norm(as.matrix(pred_gam - test$pressure), type="2")
 
-i=64
+i=54
 plot(test$time_step[((i-1)*30 + 1):(i*30)],test$pressure[((i-1)*30 + 1):((i)*30)], type = "l", col ="red",ylim =c(0,40))
 lines(test$time_step[((i-1)*30 + 1):(i*30)],test$u_in[((i-1)*30 + 1):(i*30)], col ="blue")
 lines(test$time_step[((i-1)*30 + 1):(i*30)],pred_gam[((i-1)*30 + 1):(i*30)])

@@ -24,7 +24,12 @@ i1=sample(1:n,n/2)
 t_set=pres_row[i1,]
 c_set=pres_row[-i1,]
 
-mu=colMeans(t_set)
+grid <-  seq( 1, 30)
+t_set_func <- fData(grid,t_set)
+median_curve <- median_fData(fData = t_set_func, type = "MBD")
+
+#mu=colMeans(t_set)
+mu = median_curve$values[1,]
 res=c_set-mu
 ncm=apply(res,2,max)
 ncm_sort=c(sort(ncm),Inf)
@@ -33,13 +38,11 @@ d=ncm_sort[ceiling((m/2 + 1)*(1-alpha))]
 
 matplot(cbind(mu,mu+d,mu-d),type='l')
 
-
-i = 58
-plot(test$time_step[((i-1)*30 + 1):(i*30)],mu, type = "l", col ="red", ylim = c(-30, 60))
+i = 31
+plot(test$time_step[((i-1)*30 + 1):(i*30)], mu, type = "l", col ="red", ylim = c(-30, 60))
 lines(test$time_step[((i-1)*30 + 1):(i*30)], mu+d, type='l')
 lines(test$time_step[((i-1)*30 + 1):(i*30)], mu-d, type='l')
 lines(test$time_step[((i-1)*30 + 1):(i*30)],pred_gam[((i-1)*30 + 1):(i*30)], col='blue')
-
 
 
 #scale the amplitude

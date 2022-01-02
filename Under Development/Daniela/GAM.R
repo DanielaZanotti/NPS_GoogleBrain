@@ -54,8 +54,14 @@ train <- clus1 %>%
 #Create test set
 test  <- anti_join(clus1, train, by = 'id')
 
+# New obs
+d2 <- unique(test[,'breath_id'])
+rn2 <- sample(d2, 1, replace = F)
+new_obs <- test %>% 
+  filter(breath_id %in% rn2)
+test  <- anti_join(test, new_obs, by = 'id')
 
-################################ GAMM  #############################
+################################ GAM  #############################
 
 m1 <- gam(pressure ~ time_step + s(u_in) + s(tot_u_in) +
                  + s(u_in_diff1) + s(u_in_diff2) + s(u_in_diff3) + s(u_in_diff4) + s(u_in_diff5) +
@@ -84,10 +90,13 @@ pred_gam = predict(m1, newdata= test)
 
 score = norm(as.matrix(pred_gam - test$pressure), type="2")
 
-i=54
-plot(test$time_step[((i-1)*30 + 1):(i*30)],test$pressure[((i-1)*30 + 1):((i)*30)], type = "l", col ="red",ylim =c(0,40))
+i=5
+plot(test$time_step[((i-1)*30 + 1):(i*30)],test$pressure[((i-1)*30 + 1):((i)*30)], type = "l", col ="black",ylim =c(-20,100))
 lines(test$time_step[((i-1)*30 + 1):(i*30)],test$u_in[((i-1)*30 + 1):(i*30)], col ="blue")
-lines(test$time_step[((i-1)*30 + 1):(i*30)],pred_gam[((i-1)*30 + 1):(i*30)])
+lines(test$time_step[((i-1)*30 + 1):(i*30)],pred_gam[i,], col="red")
+
+lines(test$time_step[((i-1)*30 + 1):(i*30)], test$pressure[((i-1)*30 + 1):(i*30)]+(k*s), type='l')
+lines(test$time_step[((i-1)*30 + 1):(i*30)], test$pressure[((i-1)*30 + 1):(i*30)]-(k*s), type='l')
 
 
 

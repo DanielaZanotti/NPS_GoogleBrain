@@ -28,11 +28,6 @@ pred_gam <- matrix(pred_gam, ncol = 30 , byrow = TRUE)
 
 alpha = 0.1
 
-#[grid <-  seq( 1, 30)
-#t_set_func <- fData(grid,t_set)
-#median_curve <- median_fData(fData = t_set_func, type = "MBD")
-
-#mu = median_curve$values[1,]
 
 res = abs(pres_row - pred_gam)
 ncm=apply(res,2,max)

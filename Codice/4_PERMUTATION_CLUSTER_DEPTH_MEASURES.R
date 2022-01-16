@@ -16,7 +16,6 @@ set.seed(2304)
 
 train = read.table("Data/train_cluster.csv",header=TRUE,sep=",")
 
-
 # Interval Wise Testing among all the pairs of clusters
 
 tst = c()
@@ -67,7 +66,7 @@ compare = function(i, j){
   clus2_u_in <- matrix(clus2$u_in, ncol = 30 , byrow = TRUE)
   temp = IWT2(clus1_u_in,clus2_u_in)
   ap <- temp$adjusted_pval
-  if( length( which( ap[[1]] > 0.05)) > 0.75*30)
+  if( length( which( ap[[1]] > 0.05)) > 0.70*30)
     {return(TRUE)}
   return(FALSE)
 }
@@ -112,7 +111,7 @@ for(z in unique(s))
 # Compute the median of each clusters with depth measures
 
 medians = c()
-for(i in seq(1, 48))
+for(i in seq(1, n-1))
 {
   clus1 = train_final[which(train_final$clust == i),]
   clus1_u_in <- matrix(clus1$u_in, ncol = 30 , byrow = TRUE)

@@ -15,7 +15,6 @@ set.seed(2304)
 ############################### LOAD DATA ########################
 
 train_final = read.table("Data/train_final.csv",header=TRUE,sep=",")
-validation = read.table("Data/validationset.csv",header=TRUE,sep=",")
 medians = read.table("Data/medians.csv",header=TRUE,sep=",")
 
 
@@ -24,11 +23,11 @@ medians = read.table("Data/medians.csv",header=TRUE,sep=",")
 gam_models = list()
 R2 = c()
 
-for(i in 1:length(unique(validation$clust))){
+for(i in 1:length(unique(train_final$clust))){
   
-  clus = validation[which(validation$clust == i),]
+  clus = train_final[which(train_final$clust == i),]
   
-  model <- gam(pressure ~ time_step + s(u_in) + s(tot_u_in) +
+  model <- gam(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(area) +
                  + s(u_in_diff1) + s(u_in_diff2) + s(u_in_diff3) + s(u_in_diff4) + s(u_in_diff5) +
                  + s(u_in_shift1) + s(u_in_shift2) + s(u_in_shift3) + 
                  + s(u_in_shift4) + s(u_in_shift5) +
@@ -46,10 +45,16 @@ max(R2)
 
 # Example of summary and residuals of a model
 
-summary(gam_models[[6]]) 
-plot(gam_models[[6]], ylim = c(-10, 10))
+i = 18
+summary(gam_models[[i]]) 
+plot(gam_models[[i]], ylim = c(-40, 70))
 
-hist(gam_models[[6]]$residuals)
-qqnorm(gam_models[[6]]$residuals)
-qqline(gam_models[[6]]$residuals)
+hist(gam_models[[i]]$residuals, xlab='Residuals')
+qqnorm(gam_models[[i]]$residuals)
+qqline(gam_models[[i]]$residuals)
+
+shapiro.test(gam_models[[i]]$residuals[1:5000])
+
+pp = predict(gam_models[[i]])
+plot(pp, residuals(gam_models[[i]]), xlab = 'Prediction', ylab = 'Residuals')
 

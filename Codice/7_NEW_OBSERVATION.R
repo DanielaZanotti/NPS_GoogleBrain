@@ -8,17 +8,20 @@ library(data.table)
 library(gamm4)
 library(knitr)
 library(mgcv)
+library(fdakma)
 library(conformalInference)
 
 set.seed(2304)
 
 ########################## DEAL WITH A NEW OBSERVATION #########################
 
+test = read.table("Data/testset.csv",header=TRUE,sep=",")
+
 # New observation 
 
-d2 <- unique(validation[,'breath_id'])
+d2 <- unique(test[,'breath_id'])
 rn2 <- sample(d2, 1, replace = F)
-new_obs <- validation %>% 
+new_obs <- test %>% 
   filter(breath_id %in% rn2)
 
 

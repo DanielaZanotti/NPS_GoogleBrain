@@ -14,34 +14,31 @@ set.seed(2304)
 
 data = read.table("Data/data_feature.csv",header=TRUE,sep=",")
 
-#Create training and validation set
+# Create training and test sets
 
-d <- unique(data[,'breath_id'])
-rn <- sample(d, length(d)*0.80, replace = F)
+d = unique(data[,'breath_id'])
+rn = sample(d, length(d)*0.80, replace = F)
 
-train <- data %>% 
+train = data %>% 
   filter(breath_id %in% rn)
 
-validation  <- anti_join(data, train, by = 'id')
+test  = anti_join(data, train, by = 'id')
 
+# Create matrix of u_in and time step 
 
-n=length(unique(train$breath_id))
-u_in_row=data.frame(matrix(0,n,30))
-i=1
-f= function(vect){
-  u_in_row[i,]<<-t(vect)
-  i<<-i+1
+n = length(unique(train$breath_id))
+y = c()
+x = c()
+for (i in unique(train$breath_id))
+{
+  temp1 = train[which(train$breath_id==i), 'u_in']
+  temp2 = train[which(train$breath_id==i), 'time_step']
+  y = rbind(y, temp1)
+  x = rbind(x, temp2)
 }
 
-i=1
-time_step_row=data.frame(matrix(0,n,30))
-g= function(vect){
-  time_step_row[i,]<<-t(vect)
-  i<<-i+1
-}
-
-y = as.matrix(u_in_row)
-x = as.matrix(time_step_row)
+#y = as.matrix(u_in_row)
+#x = as.matrix(time_step_row)
 
 
 ############################# SILHOUETTE ANALYSIS ##############################
@@ -74,7 +71,7 @@ plot(wss , type = "l")
 
 n_cluster=50
 
-fdakma_noalign_pearson_50_dil <- kmap(
+fdakma_pearson_50_dil <- kmap(
   x=x, y=y, n_clust = n_cluster,
   warping_method = 'dilation',
   similarity_method = 'pearson',
@@ -82,17 +79,18 @@ fdakma_noalign_pearson_50_dil <- kmap(
   fence=TRUE
 )
 
-kmap_show_results(fdakma_noalign_pearson_50_dil)x11()
+kmap_show_results(fdakma_pearson_50_dil)
 
+x11()
 par(mfrow=c(5,5))
-for (i in seq(26,50 )){
-  clus = y[which(fdakma_noalign_pearson_50_dil$labels == i),]
-  time = x[which(fdakma_noalign_pearson_50_dil$labels == i),]
+for (i in seq(1, 25)){
+  clus = y[which(fdakma_pearson_50_dil$labels == i),]
+  time = x[which(fdakma_pearson_50_dil$labels == i),]
   idx = data.frame(seq(1,dim(clus)[1] ))
   curr_idx = idx %>% sample_frac(0.10)
   clus = clus[curr_idx[,1],]
   time = time[curr_idx[,1],]
-  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "grey")
+  matplot(t(time),t(clus), type='l', xlab='x', ylab='orig.func', col= "blue")
 }
 
 
@@ -101,19 +99,17 @@ for (i in seq(26,50 )){
 j = 1
 for(i in unique(train$breath_id))
 {
-  train[which(train$breath_id==i), 'clust'] = fdakma_noalign_pearson_50_dil$labels[j]
+  train[which(train$breath_id==i), 'clust'] = fdakma_pearson_50_dil$labels[j]
   j = j+1
 }
 
 # Save the data
 
-write.table(train, file="train/train_cluster.csv", 
+write.table(train, file="Data/train_cluster.csv", 
             quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
 
-write.table(validation, file="train/validationset.csv", 
+write.table(test, file="Data/testset.csv", 
             quote=T, sep=",", dec=".", na="NA", row.names=F, col.names=T)
-
-
 
 
 

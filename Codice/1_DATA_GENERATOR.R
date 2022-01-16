@@ -11,7 +11,7 @@ library(data.table)
 
 # Read the dataset as a data.frame
 
-df = read.table("Data/train.csv",header=TRUE,sep=",")
+df = read.table("Data/initial_train.csv",header=TRUE,sep=",")
 head(df)
 attach(df)
 

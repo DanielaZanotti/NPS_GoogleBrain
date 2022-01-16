@@ -58,7 +58,7 @@ for( i in unique(data$breath_id))
 
 data$max_u_in = 0
 for (i in unique(data$breath_id)) {
-  mx <- max(data[which(data$breath_id==i), 'u_in'])
+  mx = max(data[which(data$breath_id==i), 'u_in'])
   data[which(data$breath_id==i), 'max_u_in'] = mx
 }
 
@@ -142,18 +142,6 @@ for (i in unique(data$breath_id)) {
   data[which(data$breath_id==i), 'u_in_shift3'] = shift[3:(l+2)]
   data[which(data$breath_id==i), 'u_in_shift4'] = shift[2:(l+1)]
   data[which(data$breath_id==i), 'u_in_shift5'] = shift[1:l]
-}
-
-
-#######################
-######### CLUSTERING
-######################
-
-j = 1
-for(i in unique(data$breath_id))
-{
-  data[which(data$breath_id==i), 'clust'] = fdakma_pearson$labels[j]
-  j = j+1
 }
 
 

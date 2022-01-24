@@ -17,10 +17,10 @@ data = read.table("Data/data_feature.csv",header=TRUE,sep=",")
 # Create training and test sets
 
 d = unique(data[,'breath_id'])
-rn = sample(d, length(d)*0.80, replace = F)
+r_num = sample(d, length(d)*0.80, replace = F)
 
-train = data %>% 
-  filter(breath_id %in% rn)
+train <- data %>% 
+  filter(breath_id %in% r_num)
 
 test  = anti_join(data, train, by = 'id')
 

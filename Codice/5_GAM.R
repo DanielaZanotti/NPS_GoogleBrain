@@ -22,10 +22,12 @@ medians = read.table("Data/medians.csv",header=TRUE,sep=",")
 
 gam_models = list()
 R2 = c()
+rc = c()
 
 for(i in 1:length(unique(train_final$clust))){
   
   clus = train_final[which(train_final$clust == i),]
+  rc = rbind(rc, clus$R_C)
   
   model <- gam(pressure ~ time_step + s(u_in) + s(tot_u_in) + s(area) +
                  + s(u_in_diff1) + s(u_in_diff2) + s(u_in_diff3) + s(u_in_diff4) + s(u_in_diff5) +
@@ -45,7 +47,8 @@ max(R2)
 
 # Example of summary and residuals of a model
 
-i = 18
+i = 45
+i = 35
 summary(gam_models[[i]]) 
 plot(gam_models[[i]], ylim = c(-40, 70))
 

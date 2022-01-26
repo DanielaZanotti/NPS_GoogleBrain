@@ -19,9 +19,9 @@ test = read.table("Data/testset.csv",header=TRUE,sep=",")
 
 # New observation 
 
-d3 = unique(test[,'breath_id'])
+d3 = unique(new_observation[,'breath_id'])
 rn3 = sample(d3, 1, replace = F)
-new_obs = test %>% 
+new_obs = new_observation %>% 
   filter(breath_id %in% rn3)
 
 
@@ -55,8 +55,8 @@ for( i in possible_groups)
   }
 }
 
-plot(new_obs$time_step, new_obs$u_in, type='l')
-lines(grid, medians[idx,], col='red')
+#plot(new_obs$time_step, new_obs$u_in, type='l')
+#lines(grid, medians[idx,], col='red')
 
 
 # Predict the pressure
@@ -65,16 +65,15 @@ if (idx == 0)
   prediction = rep(0, 30)
 }
 
-prediction = predict(gam_models[[idx]], newdata= new_obs)
+prediction = predict(gam_models[[idx]], newdata = new_obs)
 
 
 # Plot the true pressure, the predicted pressure and the conformal prediction 
 
 x11()
-plot(new_obs$time_step,new_obs$pressure, type = "l", col ="black",ylim =c(-25,80), xlab = 'Time stamp', ylab = 'Pressure')
-lines(new_obs$time_step,prediction, col="red")
-lines(new_obs$time_step, new_obs$pressure+(K[idx]*S[idx,]), type='l', lty =2)
-lines(new_obs$time_step, new_obs$pressure-(K[idx]*S[idx,]), type='l', lty =2)
-
+plot(new_obs$time_step,new_obs$pressure, type = "l", col ="red",ylim =c(-10,60), xlab = 'Time stamp', ylab = 'Pressure', lwd = 2)
+lines(new_obs$time_step,prediction, col="black", lwd = 2)
+lines(new_obs$time_step, prediction + (K[idx]*S[idx,]), type='l', lty =2, lwd = 2)
+lines(new_obs$time_step, pmax( prediction -(K[idx]*S[idx,]), rep(0, 30)), type='l', lty =2, lwd = 2)
 
 

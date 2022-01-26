@@ -48,9 +48,8 @@ max(R2)
 # Example of summary and residuals of a model
 
 i = 45
-i = 35
 summary(gam_models[[i]]) 
-plot(gam_models[[i]], ylim = c(-40, 70))
+plot(gam_models[[i]], ylim = c(-20, 20))
 
 hist(gam_models[[i]]$residuals, xlab='Residuals')
 qqnorm(gam_models[[i]]$residuals)

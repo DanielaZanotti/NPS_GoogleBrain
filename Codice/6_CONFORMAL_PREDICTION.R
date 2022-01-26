@@ -62,24 +62,23 @@ pres_row_cp = c()
 K = c()
 S = c()
 
+d2 = unique(test[,'breath_id'])
+rn2 = sample(d2, 100, replace = F)
+new_observation = test %>% 
+  filter(breath_id %in% rn2)
+calibration_set = anti_join(test, new_observation, by='id')
+
 for( i in 1:(length(unique(test$pred_clust))-1))
 {
-  clus = test[which(test$pred_clust == i),]
-  
-  d2 = unique(clus[,'breath_id'])
-  rn2 = sample(d2, length(d2)/2, replace = F)
-  t_set = clus %>% 
-    filter(breath_id %in% rn2)
-  c_set = anti_join(clus, t_set, by='id')
-  c_set = c_set[1:dim(t_set)[1],]
-  
+  clus = calibration_set[which(calibration_set$pred_clust == i),]
+
   # Prediction for cluster i
-  pred_gam = predict(gam_models[[i]], newdata= t_set)
+  pred_gam = predict(gam_models[[i]], newdata= clus)
   pred_gam = matrix(pred_gam, ncol = 30 , byrow = TRUE)
   
   pred_cp = rbind(pred_cp, pred_gam)
   
-  pres_row = matrix(c_set[,'pressure'], ncol = 30 , byrow = TRUE)
+  pres_row = matrix(clus[,'pressure'], ncol = 30 , byrow = TRUE)
   pres_row_cp = rbind(pres_row_cp, pres_row)
   
   # Compute bands for cluster i 
@@ -104,7 +103,10 @@ for( i in 1:(length(unique(test$pred_clust))-1))
 }
 
 
+totres = abs(pres_row_cp - pred_cp)
+RSS = sum(totres^2) 
+TSS = sum((pres_row_cp - mean(pred_cp))^2)
 
-
+R2 = 1 - (RSS/TSS)
 
 
